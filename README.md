@@ -1,7 +1,10 @@
 neo4j_db_project
 ==============================
 
-A cool project
+## Server Links
+* [Neo4j Browser](http://localhost:7474)
+* [Redis Commander](http://localhost:8081)
+* [RQ Dashboard](http://localhost:9181)
 
 Project Organization
 ------------

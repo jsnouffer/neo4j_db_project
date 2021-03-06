@@ -1,0 +1,6 @@
+python-dotenv
+PyYAML
+praw
+neomodel
+redis
+rq
