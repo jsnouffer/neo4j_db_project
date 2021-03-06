@@ -1,12 +1,10 @@
-import os
-import time
+import datetime
 
-from neomodel import (StructuredNode, StringProperty, IntegerProperty, BooleanProperty,RelationshipTo, One, DateTimeProperty)
+from neomodel import config as neomodel_conf
+from neomodel import (StructuredNode, StringProperty, IntegerProperty, BooleanProperty, RelationshipTo, One, DateTimeProperty)
 from praw import models as praw_models
 
-import datetime
-from neomodel import config as neomodel_conf
-
+NEO4J_URL: str = "bolt://neo4j:bitnami@localhost:7687"
 
 class Redditor(StructuredNode):
     rid = StringProperty(unique_index=True)
@@ -30,7 +28,7 @@ class Subreddit(StructuredNode):
     is_nsfw = BooleanProperty(index=True)
     created_utc = DateTimeProperty(index=True)
 
-    # # Edges
+    # Edges
     submitters = RelationshipTo('reddit_collector.db.Redditor', 'SUBMITTED')
     subcribers = RelationshipTo('reddit_collector.db.Redditor', 'IS_SUBSCRIBED')
     moderators = RelationshipTo('reddit_collector.db.Redditor', 'MODERATES')
@@ -57,7 +55,7 @@ class Comment(StructuredNode):
 
 
 def insert_comment(comment: praw_models.Comment):
-    neomodel_conf.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:7687'
+    neomodel_conf.DATABASE_URL = NEO4J_URL
 
     cmt = Comment(rid=comment.id,
                           body=comment.body,
@@ -68,7 +66,7 @@ def insert_comment(comment: praw_models.Comment):
                           ).save()
 
 def insert_redditor(redditor: praw_models.Redditor):
-    neomodel_conf.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:7687'
+    neomodel_conf.DATABASE_URL = NEO4J_URL
 
     rdt = Redditor(rid=redditor.id,
                    name=redditor.name,
@@ -82,10 +80,10 @@ def insert_redditor(redditor: praw_models.Redditor):
 
 
 def insert_submission(submission: praw_models.Submission):
-    neomodel_conf.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:7687'
+    neomodel_conf.DATABASE_URL = NEO4J_URL
 
 def insert_subreddit(subreddit: praw_models.Subreddit):
-    neomodel_conf.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:7687'
+    neomodel_conf.DATABASE_URL = NEO4J_URL
 
     srt = Subreddit(rid=subreddit.id,
                     name=subreddit.name,
