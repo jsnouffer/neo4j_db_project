@@ -37,7 +37,7 @@ def main():
     )
     # net.create_constraints()
     net.run_cypher_code()
-    # net.add_karma(reddit)
+    net.add_karma(reddit)
 
     # queue = InputQueue()
 
