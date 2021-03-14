@@ -1,8 +1,9 @@
 from typing import Union
 from itertools import chain
 
-from reddit_collector.data_models import Relationships
-from reddit_collector.data_models import Comment, Submission, Subreddit, Redditor
+from reddit_detective.data_models import Relationships
+from reddit_detective.data_models import Comment, Submission, Subreddit, Redditor
+from praw.models import MoreComments
 
 
 def _link_nodes(first_id, second_id, rel_type, props_str):
@@ -54,7 +55,9 @@ class Submissions:
         author_links = []
         props = {}
 
-        for sub in submission_list:
+        unique_subs = {sub.data["id"]: sub for sub in submission_list}.values()
+
+        for sub in unique_subs:
             submissions.append(sub.merge_code())
 
             subreddit_code = Subreddit(self.start.api, sub.subreddit_name, limit=None).merge_code()
@@ -65,7 +68,7 @@ class Submissions:
                 author_code = sub.author.merge_code()
                 if author_code not in authors:
                     authors.append(author_code)
-                
+
                 author_links.append(_link_nodes(
                     sub.author_id,
                     sub.data["id"],
@@ -92,7 +95,7 @@ class Comments(Submissions):
     Degree 2: Comments
     Starting points: Subreddit, Submission, Redditor
         All of Degree 1
-        Link redditors with subreddits via comments (COMMENTED)
+        Link redditors with submissions via comments (AUTHORED)
     """
     def __init__(self, starting_point: Union[Subreddit, Submission, Redditor]):
         if "comments" not in starting_point.available_degrees:
@@ -144,9 +147,11 @@ class Comments(Submissions):
                 props
             ))
 
-            submissions.append(Submission(self.start.api, comment.submission.id, limit=None))
+            sub = Submission(self.start.api, comment.submission.id, limit=None)
+            if sub not in submissions:
+                submissions.append(sub)
         
-        return comment_codes + authors, parent_links + author_links, list(set(submissions))
+        return comment_codes + authors, parent_links + author_links, submissions
     
     def code(self):
         comment_merges, comment_links, submissions = self._merge_and_link_comments(self.comments())
@@ -162,7 +167,7 @@ class CommentsReplies(Comments):
     Starting points: Subreddit, Submission, Redditor
         All of Degree 2
         For all comments, get the list of replies
-        Link redditors to redditors thru which one replied to other (REPLIED)
+        Link comments to replies (which are also comments) with UNDER relationship
     """
     def __init__(self, starting_point: Union[Subreddit, Submission, Redditor]):
         if "replies" not in starting_point.available_degrees:
@@ -191,6 +196,9 @@ class CommentsReplies(Comments):
             base_comment_list = self.start.comments()
             full_comment_list = base_comment_list
         for comment in base_comment_list:
+            if isinstance(comment, MoreComments):
+                base_comment_list += comment.comments()
+                continue
             comment.refresh()
             for reply in comment.replies:
                 full_comment_list.append(reply)

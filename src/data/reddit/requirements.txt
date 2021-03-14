@@ -1,6 +1,5 @@
 python-dotenv
 PyYAML
 praw
+neo4j
 neomodel
-redis
-rq

@@ -2,7 +2,7 @@ import praw
 from prawcore.exceptions import Redirect, NotFound
 from abc import ABC
 
-from reddit_collector.utils import strip_punc
+from reddit_detective.utils import strip_punc
 
 """
 Node types:
@@ -42,9 +42,9 @@ class Node(ABC):
     """
     def __init__(self, api: praw.Reddit, name, limit, indexing, time_filter):
         if indexing not in _ACCEPTED_INDEXES:
-            raise ValueError(f"reddit_collector only accepts {_ACCEPTED_INDEXES} as indexes")
+            raise ValueError(f"reddit_detective only accepts {_ACCEPTED_INDEXES} as indexes")
         if time_filter not in _ACCEPTED_TIME_FILTERS:
-            raise ValueError(f"reddit_collector only accepts {_ACCEPTED_TIME_FILTERS} as time filters")
+            raise ValueError(f"reddit_detective only accepts {_ACCEPTED_TIME_FILTERS} as time filters")
         self.api = api
         self.name = name
         self.limit = limit

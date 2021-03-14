@@ -3,8 +3,8 @@ from neo4j import BoltDriver
 from typing import List, Union
 from itertools import chain
 
-from reddit_collector.relationships import Submissions, Comments, CommentsReplies
-from reddit_collector.karma import (_remove_karma, _set_karma_subreddits, _set_karma_submissions,
+from reddit_detective.relationships import Submissions, Comments, CommentsReplies
+from reddit_detective.karma import (_remove_karma, _set_karma_subreddits, _set_karma_submissions,
                                     _set_karma_redditors, _set_karma_comments)
 
 
@@ -17,7 +17,10 @@ _CONSTRAINTS = [
         ON (sm:Submission) ASSERT (sm.id) IS UNIQUE;""",
     
     """CREATE CONSTRAINT UniqueSubreddit
-        ON (sr:Subreddit) ASSERT (sr.id) IS UNIQUE;"""
+        ON (sr:Subreddit) ASSERT (sr.id) IS UNIQUE;""",
+
+    """CREATE CONSTRAINT UniqueComment
+        ON (c:Comment) ASSERT (c.id) IS UNIQUE;"""
 ]
 
 
