@@ -1,6 +1,6 @@
-from praw.models import reddit
+from praw.models import Comment, reddit
 
-from neomodel import StringProperty, RelationshipFrom, RelationshipTo, StructuredNode
+from neomodel import Relationship, RelationshipFrom, RelationshipTo, StringProperty, StructuredNode
 from neomodel.exceptions import DoesNotExist
 
 
@@ -8,7 +8,7 @@ class RedditNode(StructuredNode):
     __abstract_node__ = True
 
     @classmethod
-    def get(cls, id: str) -> 'Submission':
+    def get(cls, id: str) -> 'RedditNode':
 
         kwargs: dict = {}
         kwargs[cls.__name__.lower() + "_id"] = id
@@ -17,25 +17,9 @@ class RedditNode(StructuredNode):
         except DoesNotExist:
             return None
 
-
-class Submission(RedditNode):
-    submission_id = StringProperty(unique_index=True)
-    subreddit = RelationshipTo('Subreddit', 'CHILD')
-    author = RelationshipFrom('Redditor', 'AUTHOR')
-
-    @classmethod
-    def add(cls, submission: reddit.submission.Submission) -> 'Submission':
-        uid: str = submission.subreddit_id + "_" + submission.id
-        node: Submission = cls.get(uid)
-        if not node:
-            node = Submission(submission_id=uid).save()
-
-        return node
-
 class Subreddit(RedditNode):
     subreddit_id = StringProperty(unique_index=True)
     name = StringProperty()
-    submission = RelationshipFrom('Submission', 'CHILD')
     submitter = RelationshipFrom('Redditor', 'SUBMITTER')
 
     @classmethod
@@ -48,14 +32,25 @@ class Subreddit(RedditNode):
 
 class Redditor(RedditNode):
     redditor_id = StringProperty(unique_index=True)
-    name = StringProperty()
-    submission = RelationshipTo('Submission', 'AUTHOR')
-    submitter = RelationshipFrom('Subreddit', 'SUBMITTER')
+    submitter = RelationshipTo('Subreddit', 'SUBMITTER')
+    collaborator = Relationship('Redditor', 'INTERACTED')
+    redditor: reddit.redditor.Redditor = None
 
     @classmethod
     def add(cls, redditor: reddit.redditor.Redditor) -> 'Redditor':
 
-        node: Redditor = cls.get(redditor.id)
+        node: Redditor = cls.get(redditor.name)
         if node:
             return node
-        return Redditor(redditor_id=redditor.id, name=redditor.name).save()
+        return Redditor(redditor_id=redditor.name).save()
+
+    def addCollaborator(self, comment: Comment) -> 'Redditor':
+        if comment.author is None:
+            return None
+
+        node: Redditor = Redditor.add(comment.author)
+        if node.redditor_id != self.redditor_id:
+            node.collaborator.connect(self)
+            return node
+
+        return None

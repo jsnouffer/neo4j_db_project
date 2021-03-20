@@ -1,14 +1,22 @@
-from praw.models import reddit
-from reddit_collector.data_model import Redditor, Submission, Subreddit
-
-
-ADD_SUBMISSION_NODES: bool = True
+from praw.models import Comment, MoreComments, reddit
+from reddit_collector.data_model import Redditor, Subreddit
+from typing import List
 
 def add_relationships(submission: reddit.submission.Submission) -> None:
+    subreddit: Subreddit = Subreddit.add(submission.subreddit)
+    redditor: Redditor = Redditor.add(submission.author)
+    subreddit.submitter.connect(redditor)
 
-    if ADD_SUBMISSION_NODES:
-        node: Submission = Submission.add(submission)
-        node.subreddit.connect(Subreddit.add(submission.subreddit))
-        node.author.connect(Redditor.add(submission.author))
-    else:
-        Subreddit.add(submission.subreddit).submitter.connect(Redditor.add(submission.author))
+    add_comments(subreddit, redditor, submission.comments.list())
+
+def add_comments(subreddit: Subreddit, redditor: Redditor, comments: List["Comment"]):
+    for comment in comments:
+        if isinstance(comment, MoreComments):
+            add_comments(subreddit, redditor, comment.comments())
+        else:
+            commenter: Redditor = redditor.addCollaborator(comment)
+            if commenter is not None:
+                subreddit.submitter.connect(commenter)
+                add_comments(subreddit, commenter, comment.replies.list())
+            else:
+                add_comments(subreddit, redditor, comment.replies.list())
