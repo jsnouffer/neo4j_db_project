@@ -18,5 +18,22 @@
 Hacker News is Ycombinator Entrepreneur message board.
 
 - [Hacker News/API](https://github.com/HackerNews/API)
+- [algolia.com **hn** search api](https://hn.algolia.com/api) from [dzone article](https://dzone.com/articles/algolia-kindly-provides-a-hacker-news-search-api)
 
-### LinkedIn (Kevin)
+Examples
+
+    curl https://hn.algolia.com/api/v1/search?query=minecraft
+
+    # hn stories on ~ 3/10/2021
+    curl http://hn.algolia.com/api/v1/search_by_date?tags=story&numericFilters=created_at_i>1615332811,created_at_i<1615419211
+
+    # hn stories on ~ 3/10/2021 about minecraft
+    curl https://hn.algolia.com/api/v1/search_by_date?tags=story&numericFilters=created_at_i%3E1615332811,created_at_i%3C1615419211&query=minecraft
+
+    # user 'speedcoder' info
+    curl https://hn.algolia.com/api/v1/users/speedcoder
+
+    # comments for story_x
+    http://hn.algolia.com/api/v1/search?tags=comment,story_X
+
+### Speedrunner (Kevin)
