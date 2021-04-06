@@ -6,7 +6,7 @@ from reddit_collector.redis import InputQueue
 from typing import List
 
 
-USE_QUEUE: bool = False
+USE_QUEUE: bool = True
 NEO4J_URL: str = "bolt://neo4j:bitnami@localhost:7687"
 queue = InputQueue()
 
