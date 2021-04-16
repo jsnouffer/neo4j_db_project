@@ -43,6 +43,8 @@ Halin repo: https://github.com/moxious/halin
 
 ### HackerNews (Ron)
 
+Use [neomodel](https://neomodel.readthedocs.io/en/latest/getting_started.html) import into Neo4j.
+
 Hacker News is Ycombinator Entrepreneur message board.
 
 - [Hacker News/API](https://github.com/HackerNews/API)
