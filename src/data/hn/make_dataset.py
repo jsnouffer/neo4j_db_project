@@ -44,7 +44,7 @@ def ingest_author(data_dir: str, author_name: str):
 def main():
     authors_story = defaultdict(list)
     authors_comment = defaultdict(list)
-    data_dir = os.path.normpath(os.path.join(os.getcwd(), '..','..','data','raw'))
+    data_dir = os.path.normpath(os.path.join(os.getcwd(), '..','..','..','data','raw'))
     stories = ingest_stories(data_dir, 'stories', 'https://hn.algolia.com/api/v1/search?query=minecraft')
     print(str(len(stories['hits'])) + ' stories.')
     for story in stories['hits']:
