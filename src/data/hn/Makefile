@@ -20,4 +20,5 @@ update: ## Updates dependencies in virtual environment
 	venv/bin/pip install -r requirements.txt
 
 run: venv ## Launches app using virtual environment
-	CONFIG_ENV=config.env venv/bin/python -m $(app_name)
+	CONFIG_ENV=config.env 
+	venv/bin/python -m $(app_name)
