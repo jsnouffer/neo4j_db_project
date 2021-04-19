@@ -10,11 +10,26 @@ from neomodel import config as neomodel_conf
 from data_model import *
 
 NEO4J_URL: str = "bolt://neo4j:bitnami@localhost:17687"
+# delete all: MATCH (n) DETACH DELETE n
 
 def get_stories(topic: str) -> dict:
-    url = 'https://hn.algolia.com/api/v1/search?query=topic'.format(topic)
+    url = 'https://hn.algolia.com/api/v1/search?query={}'.format(topic)
     response = requests.get(url)
     results: dict = response.json()
+    return results
+
+def ingest_comment(parent: HnNode, node_id:str)-> dict:
+    url = 'https://hacker-news.firebaseio.com/v0/item/{}.json?print=pretty'.format(node_id)
+    response = requests.get(url)
+    results: dict = response.json()
+    if 'deleted' not in results:
+        comment = Comment.add(results)
+        author = Author.add(results)
+        author.add_connection(comment)
+        comment.add_connection(parent)
+        if 'kids' in results:
+            for kid in results['kids']:
+                ingest_comment(comment, str(kid)) 
     return results
 
 def ingest_story(node_id: str) -> dict:
@@ -24,6 +39,9 @@ def ingest_story(node_id: str) -> dict:
     story = Story.add(results)
     author = Author.add(results)
     author.add_connection(story)
+    if 'kids' in results:
+        for kid in results['kids']:
+            ingest_comment(story, str(kid)) 
     return results
 
 def main():

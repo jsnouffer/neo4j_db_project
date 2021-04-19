@@ -45,7 +45,7 @@ class Comment(HnNode):
         if node:
             return node
         return Comment(comment_id=comment['id'],
-            text=unescape(comment['title'])).save()
+            text=unescape(comment['text'])).save()
 
     def add_connection(self, parent_node: HnNode) -> 'Comment':
         if type(parent_node) is Story:
@@ -60,6 +60,7 @@ class Comment(HnNode):
 
 class Author(HnNode):
     author_id = StringProperty(unique_index=True)
+    name = StringProperty()
     stories = RelationshipFrom('Story', 'BY')
     comments = RelationshipFrom('Comment', 'BY')
 
@@ -68,7 +69,8 @@ class Author(HnNode):
         node: Author = cls.get(hn_node['by'])
         if node:
             return node
-        return Author(author_id=hn_node['by']).save()
+        return Author(author_id=hn_node['by'], 
+            name=unescape(hn_node['by'])).save()
 
     def add_connection(self, target_node: HnNode) -> 'Author':
         if type(target_node) is Story:
