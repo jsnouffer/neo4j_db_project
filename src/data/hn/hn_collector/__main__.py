@@ -46,11 +46,11 @@ def ingest_story(node_id: str) -> dict:
 
 def main():
     neomodel_conf.DATABASE_URL = NEO4J_URL
-    stories = get_stories('minecraft')
+    stories = get_stories('minecraft') # returns top 20 stories
     for story in stories['hits']:
         print('story ' + story['objectID'] + ' by ' + story['author'])
         ingest_story(story['objectID'])
-        break
+        # break
 
 if __name__ == "__main__":
     sys.exit(main()) 
