@@ -5,7 +5,7 @@ __Count all nodes__
 MATCH (n) RETURN count(n) as count;
 ```
 
-
+__Count all relationships__
 ```
 MATCH ()-[r]->()
 RETURN count(r) as count;
@@ -39,4 +39,15 @@ ORDER BY SIZE(Redditor) DESC LIMIT 10;
 MATCH (a)-[:INTERACTED]->(b)
 RETURN b, COLLECT(a) as Redditor
 ORDER BY SIZE(Redditor) DESC LIMIT 10;
+```
+
+__Retrieve highly connected graph w/ Submission nodes__
+```
+MATCH (x)-[:SUBMITTER]->(p)
+CALL {
+  MATCH (a)-[:INTERACTED]->(b)
+  RETURN a,b
+  LIMIT 500
+}
+RETURN p,a,b,x;
 ```

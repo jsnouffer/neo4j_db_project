@@ -20,7 +20,7 @@ class RedditNode(StructuredNode):
 class Subreddit(RedditNode):
     subreddit_id = StringProperty(unique_index=True)
     name = StringProperty()
-    submitter = RelationshipFrom('Redditor', 'SUBMITTER')
+    submission = RelationshipFrom('Submission', 'SUBMISSION')
 
     @classmethod
     def add(cls, subreddit: reddit.subreddit.Subreddit) -> 'Subreddit':
@@ -30,9 +30,22 @@ class Subreddit(RedditNode):
             return node
         return Subreddit(subreddit_id=subreddit.id, name=str(subreddit)).save()
 
+class Submission(RedditNode):
+    submission_id = StringProperty(unique_index=True)
+    text = StringProperty()
+    submitter = RelationshipFrom('Redditor', 'SUBMITTER')
+
+    @classmethod
+    def add(cls, submission: reddit.submission.Submission) -> 'Submission':
+
+        node: Submission = cls.get(submission.id)
+        if node:
+            return node
+        return Submission(submission_id=submission.id, text=str(submission)).save()
+
 class Redditor(RedditNode):
     redditor_id = StringProperty(unique_index=True)
-    submitter = RelationshipTo('Subreddit', 'SUBMITTER')
+    submitter = RelationshipTo('Submission', 'SUBMITTER')
     collaborator = Relationship('Redditor', 'INTERACTED')
     redditor: reddit.redditor.Redditor = None
 
