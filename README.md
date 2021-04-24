@@ -3,8 +3,21 @@ neo4j_db_project
 
 ## Server Links
 * [Neo4j Browser](http://localhost:7474)
+    * username: neo4j
+    * password: bitnami
 * [Redis Commander](http://localhost:8081)
 * [RQ Dashboard](http://localhost:9181)
+
+## Metrics Stack
+* [Repository](https://github.com/vegasbrianc/prometheus)
+* [Alert Manager](http://localhost:9093)
+* [cAdvisor](http://localhost:8080)
+* [Grafana](http://localhost:3000)
+    * username: admin
+    * password: foobar
+* [Node Exporter](http://localhost:9100)
+* [Prometheus](http://localhost:9090)
+* [Prometheus Pushgateway](http://localhost:9091)
 
 Project Organization
 ------------

@@ -1,7 +1,7 @@
 from neomodel import config as neomodel_conf
 from praw.models import Comment, MoreComments, reddit
 from praw.models.comment_forest import CommentForest
-from reddit_collector.data_model import Redditor, Subreddit
+from reddit_collector.data_model import Redditor, Submission, Subreddit
 from reddit_collector.redis import InputQueue
 from typing import List
 
@@ -12,8 +12,11 @@ queue = InputQueue()
 
 def add_relationships(submission: reddit.submission.Submission) -> None:
     subreddit: Subreddit = Subreddit.add(submission.subreddit)
+    posting: Submission = Submission.add(submission)
+    subreddit.submission.connect(posting)
+
     redditor: Redditor = Redditor.add(submission.author)
-    subreddit.submitter.connect(redditor)
+    posting.submitter.connect(redditor)
 
     queue_comments(subreddit, redditor, submission.comments.list())
 
@@ -35,7 +38,7 @@ def add_comments(subreddit: Subreddit, redditor: Redditor, comments: List["Comme
         else:
             commenter: Redditor = redditor.addCollaborator(comment)
             if commenter is not None:
-                subreddit.submitter.connect(commenter)
+                # subreddit.submitter.connect(commenter)
                 queue_comments(subreddit, commenter, comment.replies.list())
             else:
                 queue_comments(subreddit, redditor, comment.replies.list())

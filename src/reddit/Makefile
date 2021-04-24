@@ -19,3 +19,6 @@ update: ## Updates dependencies in virtual environment
 
 run: venv ## Launches app using virtual environment
 	CONFIG_ENV=config.env venv/bin/python -m $(app_name)
+
+docker: ## Builds docker image
+	docker build . -t rq
