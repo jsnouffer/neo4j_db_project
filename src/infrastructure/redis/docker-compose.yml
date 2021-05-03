@@ -1,0 +1,40 @@
+version: "3.9"
+
+services:
+  redis:
+    image: 'docker.io/bitnami/redis:6.2-debian-10'
+    environment:
+      # ALLOW_EMPTY_PASSWORD is recommended only for development.
+      - ALLOW_EMPTY_PASSWORD=yes
+      - REDIS_DISABLE_COMMANDS=FLUSHDB,FLUSHALL
+    ports:
+      - '6379:6379'
+    volumes:
+      - '/mnt/volume_nyc1_01/redis:/bitnami'
+    restart: always
+  redis-commander:
+    container_name: redis-commander
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    environment:
+    - REDIS_HOSTS=local:redis:6379
+    ports:
+    - "8081:8081"
+    restart: always
+  rq-dashboard:
+    container_name: rq-dashboard
+    hostname: rq-dashboard
+    image: eoranged/rq-dashboard:latest
+    environment:
+    - RQ_DASHBOARD_REDIS_URL=redis://redis:6379
+    ports:
+    - "9181:9181"
+    restart: always
+  rq:
+    image: rq
+    restart: always
+    command: ["rq", "worker", "-u", "redis://localhost:6379", "comments"]
+    deploy:
+      mode: replicated
+      replicas: 6
+    network_mode: host
