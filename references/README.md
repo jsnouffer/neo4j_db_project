@@ -107,7 +107,21 @@ https://hacker-news.firebaseio.com/v0/item/8201362.json?print=pretty
   "url" : "http://imgur.com/a/NJBuH"
 }
 
-comment 8202085
+Note
+
+    https://hn.algolia.com/api/v1/search?query=minecraft 
+
+is the same as 
+
+    https://hn.algolia.com/api/v1/search?query=minecraft&page=0
+
+So, multiple results, up to page 49 can be retrieved with 
+
+    https://hn.algolia.com/api/v1/search?query=minecraft&page=49
+
+#### use hn firebase io to retrieve individual node results
+
+For example, retreive results for comment 8202085:
 
 https://hacker-news.firebaseio.com/v0/item/8202085.json?print=pretty
 
@@ -132,14 +146,9 @@ https://hacker-news.firebaseio.com/v0/user/speedcoder.json?print=pretty
   "submitted" : [ 26765657, 26739804, 26561262, 26557895, 26382557, 26050359, 25947844, 25365088, 23726509, 23726508, 23723990, 22662462, 22662458 ]
 }
 
-
-
 Via https://github.com/HackerNews/API .
 
 https://firebase.google.com/docs/libraries/
-
-
-
 
 ### Reddit (Jason)
 

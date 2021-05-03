@@ -12,5 +12,5 @@ handlers:
     stream: ext://sys.stdout
 loggers: {}
 root:
-  level: INFO
+  level: DEBUG
   handlers: [console]
