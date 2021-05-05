@@ -1,6 +1,7 @@
 from urllib.request import urlopen as uReq
 from bs4 import BeautifulSoup as soup
 import json
+import csv
 
 #from speedrun_collector.speedrunScraper import *
 
@@ -75,57 +76,61 @@ def get_user_games():
     #print(user)
     #print(user["href"])   
 
-    for user in username:
-        userLink = user["href"]
-        #print(userLink[6:])
-        userName.append(userLink[6:])
-        user_urls.append("https://www.speedrun.com" + userLink)
-        user_speed_link = "https://www.speedrun.com" + userLink
+    with open('speedrunData.csv', mode='w') as speedrun_file:
+        speedrun_writer = csv.writer(speedrun_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
-        speedrun_api = 'https://www.speedrun.com/api/v1/users/' + userName[count]
+        for user in username:
+            userLink = user["href"]
+            #print(userLink[6:])
+            userName.append(userLink[6:])
+            user_urls.append("https://www.speedrun.com" + userLink)
+            user_speed_link = "https://www.speedrun.com" + userLink
 
-        uClient = uReq(speedrun_api)
-        user_html = uClient.read()
-        #print(user_html)
-        uClient.close()
-        user_soup = soup(user_html, "html.parser")
-        runs_json = json.loads(user_soup.text)
-        #print(runs_json)
-        #print([d.get('uri') for d in runs_json['links'] if d.get('uri')])
-        #print(runs_json['data']['id'])
-        user_id = runs_json['data']['id']
-        user_id_link = 'https://www.speedrun.com/api/v1/users/' + user_id + '/personal-bests'
-        #print(user_id_link)
+            speedrun_api = 'https://www.speedrun.com/api/v1/users/' + userName[count]
 
-        uClient = uReq(user_id_link)
-        user_html = uClient.read()
-        uClient.close()
-        games_soup = soup(user_html, "html.parser")
-        games_json = json.loads(games_soup.text)
-        game_id_outputs = []
-        name_id_outputs = []
+            uClient = uReq(speedrun_api)
+            user_html = uClient.read()
+            #print(user_html)
+            uClient.close()
+            user_soup = soup(user_html, "html.parser")
+            runs_json = json.loads(user_soup.text)
+            #print(runs_json)
+            #print([d.get('uri') for d in runs_json['links'] if d.get('uri')])
+            #print(runs_json['data']['id'])
+            user_id = runs_json['data']['id']
+            user_id_link = 'https://www.speedrun.com/api/v1/users/' + user_id + '/personal-bests'
+            #print(user_id_link)
 
-        print()
-        print(userName[count])
-        print('---------------')
-        for game in games_json['data']:
-            game_id = game['run']['game']
-            if(game_id not in game_id_outputs):
-                game_id_outputs.append(game_id)
-                print(game_id)
-                game_id_link = 'https://www.speedrun.com/api/v1/games/' + game_id
-                uClient = uReq(game_id_link)
-                game_html = uClient.read()
-                uClient.close()
-                name_soup = soup(game_html, "html.parser")
-                name_json = json.loads(name_soup.text)
-                name_id = name_json['data']['names']['twitch']
-                if(name_id not in name_id_outputs):
-                    name_id_outputs.append(name_id)
-                    #print(name_id)
+            uClient = uReq(user_id_link)
+            user_html = uClient.read()
+            uClient.close()
+            games_soup = soup(user_html, "html.parser")
+            games_json = json.loads(games_soup.text)
+            game_id_outputs = []
+            name_id_outputs = []
+
+            print()
+            print(userName[count])
+            print('---------------')
+            for game in games_json['data']:
+                game_id = game['run']['game']
+                if(game_id not in game_id_outputs):
+                    game_id_outputs.append(game_id)
+                    #print(game_id)
+                    game_id_link = 'https://www.speedrun.com/api/v1/games/' + game_id
+                    uClient = uReq(game_id_link)
+                    game_html = uClient.read()
+                    uClient.close()
+                    name_soup = soup(game_html, "html.parser")
+                    name_json = json.loads(name_soup.text)
+                    name_id = name_json['data']['names']['twitch']
+                    if(name_id not in name_id_outputs):
+                        name_id_outputs.append(name_id)
+                        speedrun_writer.writerow([userName[count], name_id])
+                        print(name_id)
 
 
-        count += 1
+            count += 1
 
 
 
