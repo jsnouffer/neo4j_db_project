@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup as soup
 import json
 import csv
 
-#from speedrun_collector.speedrunScraper import *
+from speedrun_collector.data_model import * 
 
 user_urls = []
 userName = []
@@ -112,6 +112,9 @@ def get_user_games():
             print()
             print(userName[count])
             print('---------------')
+            
+            #Game()
+
             for game in games_json['data']:
                 game_id = game['run']['game']
                 if(game_id not in game_id_outputs):
@@ -128,6 +131,8 @@ def get_user_games():
                         name_id_outputs.append(name_id)
                         speedrun_writer.writerow([userName[count], name_id])
                         print(name_id)
+                        User.add(userName[count]).games.connect(Game.add(name_id))
+                        
 
 
             count += 1

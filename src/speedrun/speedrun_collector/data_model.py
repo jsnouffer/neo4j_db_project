@@ -2,7 +2,7 @@
 from neomodel import Relationship, RelationshipFrom, RelationshipTo, StringProperty, StructuredNode
 from neomodel.exceptions import DoesNotExist
 
-config.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:8687'
+#config.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:8687'
 
 class SpeedrunNode(StructuredNode):
     __abstract_node__ = True
@@ -18,16 +18,29 @@ class SpeedrunNode(StructuredNode):
             return None
 
 class Game(SpeedrunNode):
-    title = StringProperty(unique_index=True)
-    user = RelationshipTo('User', 'USER')
+    game_id = StringProperty(unique_index=True)
+    user = RelationshipFrom('User', 'PLAYS')
+
+    @classmethod
+    def add(cls, name : str) -> 'Game':
+
+        node: Game = cls.get(name)
+        if node:
+            return node
+        return Game(game_id = name).save()
 
 class User(SpeedrunNode):
-    name = StringProperty(unique_index=True)
-    games = RelationshipFrom('Game', 'USER')
+    user_id = StringProperty(unique_index=True)
+    games = RelationshipTo('Game', 'PLAYS')
 
-first_game = Game(title='Minecraft').save()
-first_user = User(name='Cactus').save()
-first_game.user.connect(first_user)
+    @classmethod
+    def add(cls, title : str) -> 'User':
+
+        node: User = cls.get(title)
+        if node:
+            return node
+        return User(user_id = title).save()
+
 
 
 
