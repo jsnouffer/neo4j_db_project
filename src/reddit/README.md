@@ -51,3 +51,22 @@ CALL {
 }
 RETURN p,a,b,x;
 ```
+
+__Delete all nodes__
+```
+MATCH (n) DETACH DELETE n;
+```
+
+__Visualize database schema__
+```
+CALL db.schema.visualization();
+```
+
+__Summarize relationships__
+```
+MATCH (n)
+OPTIONAL MATCH (n)-[r]->(x)
+WITH DISTINCT {l1: labels(n), r: type(r), l2: labels(x)}
+AS `first degree connection`
+RETURN `first degree connection`;
+```
