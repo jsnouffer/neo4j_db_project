@@ -1,8 +1,6 @@
-#from praw.models import Comment, reddit
 from neomodel import Relationship, RelationshipFrom, RelationshipTo, StringProperty, StructuredNode
 from neomodel.exceptions import DoesNotExist
 
-#config.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:8687'
 
 class SpeedrunNode(StructuredNode):
     __abstract_node__ = True

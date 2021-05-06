@@ -21,23 +21,7 @@ def main():
 
     config.DATABASE_URL = 'bolt://neo4j:bitnami@localhost:8687'
 
-    #user_scraper()
-
     get_user_games()
-
-    #class Game(StructuredNode):
-    #    title = StringProperty(unique_index=True)
-    #    user = RelationshipTo('User', 'USER')
-
-    #class User(StructuredNode):
-    #    name = StringProperty(unique_index=True)
-    #    games = RelationshipFrom('Game', 'USER')
-
-    #first_game = Game(title='Minecraft').save()
-    #first_user = User(name='Cactus').save()
-    #first_game.user.connect(first_user)
-
-    #first_game = Game(title='Minecraft').save()
 
 if __name__ == "__main__":
     sys.exit(main()) 
